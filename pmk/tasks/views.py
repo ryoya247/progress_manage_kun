@@ -56,6 +56,10 @@ class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
         task = form.save(commit=False)
         task.updated_at = timezone.now()
         task.save()
+        messages.success(
+            self.request,
+            '「{}」を更新しました'.format(self.object),
+            )
         return redirect('tasks:taskDetail', pk=task.pk)
 
 
@@ -72,7 +76,7 @@ class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
             return redirect('tasks:taskList')
         else:
             return super().get(request, *args, **kwargs)
-            
+
 
     def delete(self, request, *args, **kwargs):
         result = super().delete(request, *args, **kwargs)
