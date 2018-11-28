@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<p>{{ task.title }}</p>
+<p>進捗：{{ task.progress }}%</p>
+<p>期限：{{ task.due_date}}</p>
+{% if request.user.id == task.author.id %}
+  <a href="{% url 'tasks:taskUpdate' pk=task.id %}" class="btn btn-primary">編集</a>
+  <a href="{% url 'tasks:taskDelete' pk=task.id %}" class="btn btn-danger">削除</a>
+{% endif %}
+{% endblock %}

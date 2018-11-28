@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if messages %}
+ {% for m in messages %}
+  {{ m }}
+ {% endfor %}
+{% endif %}
+{% if tasks %}
+<p>{{user}}のタスクリスト</p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th style="width: calc(100% / 5);">タスク名</th>
+        <th style="width: calc(100% / 10);">進捗</th>
+        <th style="width: calc(100% / 10);">期限</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tasks %}
+        {% if request.user.id == t.author.id %}
+          <tr>
+            <td><a href="{% url 'tasks:taskUpdate' t.id %}">{{ t.title }}</a></td>
+            <td>
+              <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: {{ t.progress }}%;" aria-valuenow={{t.progress}} aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </td>
+            <td>{{ t.due_date }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}
