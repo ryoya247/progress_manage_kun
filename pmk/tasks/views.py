@@ -11,8 +11,26 @@ from .models import Task
 
 class TaskListView(LoginRequiredMixin, generic.ListView):
     template_name = 'tasks/taskList.html'
-    context_object_name = 'tasks'
     model = Task
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskListView, self).get_context_data(**kwargs)
+        myTasks = Task.objects.filter(author = self.request.user.id)
+        context['myTasks'] = myTasks
+        q_category = self.request.GET.get("category")
+        q_type = self.request.GET.get("sort_type")
+        if q_category != None and q_type != None:
+            if q_type == "asc":
+                context['myTasks'] = Task.objects.filter(author = self.request.user.id).order_by(q_category)
+                return context
+            elif q_type == "desc":
+                context['myTasks'] = Task.objects.filter(author = self.request.user.id).order_by(q_category).reverse()
+                return context
+            else:
+                return context
+        else:
+            return context
+
 
 
 class TaskDetailView(LoginRequiredMixin, generic.DetailView):
@@ -32,6 +50,12 @@ class TaskCreateView(LoginRequiredMixin, generic.CreateView):
     ]
     def form_valid(self, form):
         form.instance.author = self.request.user
+        task = form.save(commit=False)
+        task.save()
+        messages.success(
+            self.request,
+            '「{}」を作成しました'.format(task),
+            )
         return super(TaskCreateView, self).form_valid(form)
 
 
@@ -52,7 +76,6 @@ class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 
     def form_valid(self, form):
-        print(self.object.author.id)
         task = form.save(commit=False)
         task.updated_at = timezone.now()
         task.save()

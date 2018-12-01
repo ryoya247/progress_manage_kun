@@ -1,8 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if tasks %}
+{% if myTasks %}
 <p>{{user}}のタスクリスト</p>
+<form method="get">
+  <select name="category">
+    <option value="created_at">作成日</option>
+    <option value="title">タスク名</option>
+    <option value="progress">進捗</option>
+    <option value="due_date">期限</option>
+  </select>
+  <select name="sort_type">
+    <option value="desc">降順</option>
+    <option value="asc">昇順</option>
+  </select>
+  <button type="submit" class="btn btn-success">並び替え</button>
+</form>
   <table class="table">
     <thead>
       <tr>
@@ -12,18 +25,16 @@
       </tr>
     </thead>
     <tbody>
-      {% for t in tasks %}
-        {% if request.user.id == t.author.id %}
-          <tr>
-            <td><a href="{% url 'tasks:taskDetail' t.id %}">{{ t.title }}</a></td>
-            <td>
-              <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: {{ t.progress }}%;" aria-valuenow={{t.progress}} aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-            </td>
-            <td>{{ t.due_date }}</td>
-          </tr>
-        {% endif %}
+      {% for t in myTasks %}
+        <tr>
+          <td><a href="{% url 'tasks:taskDetail' t.id %}">{{ t.title }}</a></td>
+          <td>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: {{ t.progress }}%;" aria-valuenow={{t.progress}} aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </td>
+          <td id="due_date">{{ t.due_date }}</td>
+        </tr>
       {% endfor %}
     </tbody>
   </table>
