@@ -20,6 +20,8 @@ MESSAGE_TAGS = {
     message_constants.SUCCESS: 'alert alert-success',
     message_constants.ERROR: 'alert alert-danger'
 }
+
+SLACK_ENDPOINT = 'https://hooks.slack.com/services/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'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 

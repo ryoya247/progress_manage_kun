@@ -1,7 +1,7 @@
 {% load widget_tweaks %}
-
 {% for field in form %}
-  <div class="form-group">
+<div class="row">
+  <div class="form-group col-6">
     {{ field.label_tag }}
 
     {% if form.is_bound %}
@@ -25,4 +25,5 @@
       </small>
     {% endif %}
   </div>
+</div>
 {% endfor %}

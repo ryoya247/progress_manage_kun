@@ -7,6 +7,8 @@ from django.utils import timezone
 from django.shortcuts import redirect,get_object_or_404
 from django.contrib import messages
 from .models import Task
+import requests, json
+import pmk.settings as settings
 
 
 class TaskListView(LoginRequiredMixin, generic.ListView):
@@ -17,14 +19,30 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
         context = super(TaskListView, self).get_context_data(**kwargs)
         myTasks = Task.objects.filter(author = self.request.user.id)
         context['myTasks'] = myTasks
+
+        category_list = {
+            'created_at': '作成日',
+            'due_date': '期限',
+            'title': 'タスク名',
+            'progress': '進捗'
+        }
         q_category = self.request.GET.get("category")
         q_type = self.request.GET.get("sort_type")
+
         if q_category != None and q_type != None:
             if q_type == "asc":
                 context['myTasks'] = Task.objects.filter(author = self.request.user.id).order_by(q_category)
+                messages.success(
+                    self.request,
+                    '{}，昇順で並び替えました'.format(category_list[q_category]),
+                )
                 return context
             elif q_type == "desc":
                 context['myTasks'] = Task.objects.filter(author = self.request.user.id).order_by(q_category).reverse()
+                messages.success(
+                    self.request,
+                    '{}，降順で並べ替えました'.format(category_list[q_category]),
+                )
                 return context
             else:
                 return context
@@ -55,7 +73,24 @@ class TaskCreateView(LoginRequiredMixin, generic.CreateView):
         messages.success(
             self.request,
             '「{}」を作成しました'.format(task),
-            )
+        )
+        requests.post(settings.SLACK_ENDPOINT,
+            data = json.dumps({
+                'text': '{}さんがタスクを作成しました'.format(self.request.user),
+                "attachments": [
+                    {
+                        "color": "#36a64f",
+                        "fields": [
+                            {
+                                "title": "{}".format(task.title),
+                                "value": "進捗：{}%\n期限：{}".format(task.progress, task.due_date),
+                                "short": False
+                            }
+                        ]
+                    }
+
+                ]
+            }))
         return super(TaskCreateView, self).form_valid(form)
 
 
