@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load dueDateDiff %}
 {% block content %}
 {% if myTasks %}
 <h3>{{user}}のタスクリスト</h3>
@@ -33,7 +33,7 @@
               <div class="progress-bar" role="progressbar" style="width: {{ t.progress }}%;" aria-valuenow={{t.progress}} aria-valuemin="0" aria-valuemax="100"></div>
             </div>
           </td>
-          <td id="due_date">{{ t.due_date }}</td>
+          <td id="due_date">{{ t.due_date }}：{{ t.due_date | due_date_diff }}</td>
         </tr>
       {% endfor %}
     </tbody>

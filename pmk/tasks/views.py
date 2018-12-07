@@ -26,6 +26,7 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
             'title': 'タスク名',
             'progress': '進捗'
         }
+
         q_category = self.request.GET.get("category")
         q_type = self.request.GET.get("sort_type")
 
