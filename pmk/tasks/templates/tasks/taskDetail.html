@@ -3,8 +3,13 @@
 <p>{{ task.title }}</p>
 <p>進捗：{{ task.progress }}%</p>
 <p>期限：{{ task.due_date}}</p>
+{% for r in TaskReports %}
+  <textarea>{{ r.text }}</textarea>
+  <p>{{ r.add_progress }}</p>
+{% endfor %}
 {% if request.user.id == task.author.id %}
   <a href="{% url 'tasks:taskUpdate' pk=task.id %}" class="btn btn-primary">編集</a>
   <a href="{% url 'tasks:taskDelete' pk=task.id %}" class="btn btn-danger">削除</a>
+  <a href="{% url 'tasks:taskReportCreate' pk=task.id %}" class="btn btn-success">進捗レポートを追加</a>
 {% endif %}
 {% endblock %}

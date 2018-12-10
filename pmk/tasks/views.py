@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.shortcuts import redirect,get_object_or_404
 from django.contrib import messages
-from .models import Task
+from .models import Task, Report
 import requests, json
 import pmk.settings as settings
 
@@ -55,7 +55,14 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
 class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = 'tasks/taskDetail.html'
     model = Task
+    pk_url_kwarg = 'pk'
 
+    def get_context_data(self, **kwargs):
+        task_pk = self.kwargs.get(self.pk_url_kwarg)
+        context = super(TaskDetailView, self).get_context_data(**kwargs)
+        taskReports = Report.objects.filter(task = task_pk).order_by('created_at').reverse()
+        context['TaskReports'] = taskReports
+        return context
 
 
 class TaskCreateView(LoginRequiredMixin, generic.CreateView):
@@ -100,7 +107,6 @@ class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
     template_name = 'tasks/taskUpdate.html'
     fields = [
         'title',
-        'progress',
         'due_date'
     ]
     def get(self, request, *args, **kwargs):
@@ -118,7 +124,7 @@ class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
         messages.success(
             self.request,
             '「{}」を更新しました'.format(self.object),
-            )
+        )
         return redirect('tasks:taskDetail', pk=task.pk)
 
 
@@ -142,3 +148,45 @@ class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
         messages.success(
             self.request, '「{}」を削除しました'.format(self.object))
         return result
+
+
+class TaskReportCreatView(LoginRequiredMixin, generic.CreateView):
+    model = Report
+    success_url = reverse_lazy('tasks:taskDetail')
+    template_name = 'tasks/taskReportCreate.html'
+    fields = [
+        'add_progress',
+        'text'
+    ]
+    pk_url_kwarg = 'pk'
+
+
+    def form_valid(self, form):
+        print(self.kwargs)
+        task_pk = self.kwargs.get(self.pk_url_kwarg)
+        parent_task = get_object_or_404(Task, pk=task_pk)
+        form.instance.task = parent_task
+        report = form.save(commit=False)
+        report.updated_at = timezone.now()
+        report.save()
+        parent_task.progress += report.add_progress
+        parent_task.save()
+        messages.success(self.request, '進捗を更新しました')
+        requests.post(settings.SLACK_ENDPOINT,
+            data = json.dumps({
+                'text': '{}さんが＊{}＊の進捗を更新しました'.format(self.request.user, parent_task.title),
+                "attachments": [
+                    {
+                        "color": "#36a64f",
+                        "fields": [
+                            {
+                                "title": "{}".format(parent_task.title),
+                                "value": "進捗：{}％（ +{}％ ）\n{}".format(parent_task.progress, report.add_progress, report.text),
+                                "short": False
+                            }
+                        ]
+                    }
+
+                ]
+            }))
+        return redirect('tasks:taskDetail', pk=task_pk)
