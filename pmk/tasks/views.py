@@ -158,15 +158,18 @@ class TaskReportCreatView(LoginRequiredMixin, generic.CreateView):
         'add_progress',
         'text'
     ]
-    pk_url_kwarg = 'pk'
 
 
     def form_valid(self, form):
-        print(self.kwargs)
-        task_pk = self.kwargs.get(self.pk_url_kwarg)
+        task_pk = self.kwargs.get('pk')
         parent_task = get_object_or_404(Task, pk=task_pk)
         form.instance.task = parent_task
         report = form.save(commit=False)
+
+        if report.add_progress + parent_task.progress > 100:
+            messages.error(self.request, '進捗の合計は100%以下にしてください')
+            return redirect('tasks:taskReportCreate', pk=task_pk)
+
         report.updated_at = timezone.now()
         report.save()
         parent_task.progress += report.add_progress
@@ -174,7 +177,7 @@ class TaskReportCreatView(LoginRequiredMixin, generic.CreateView):
         messages.success(self.request, '進捗を更新しました')
         requests.post(settings.SLACK_ENDPOINT,
             data = json.dumps({
-                'text': '{}さんが＊{}＊の進捗を更新しました'.format(self.request.user, parent_task.title),
+                'text': '{}さんが進捗を更新しました'.format(self.request.user, parent_task.title),
                 "attachments": [
                     {
                         "color": "#36a64f",

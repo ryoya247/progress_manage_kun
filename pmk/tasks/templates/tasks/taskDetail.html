@@ -1,15 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
-<p>{{ task.title }}</p>
-<p>進捗：{{ task.progress }}%</p>
-<p>期限：{{ task.due_date}}</p>
-{% for r in TaskReports %}
-  <textarea>{{ r.text }}</textarea>
-  <p>{{ r.add_progress }}</p>
-{% endfor %}
 {% if request.user.id == task.author.id %}
   <a href="{% url 'tasks:taskUpdate' pk=task.id %}" class="btn btn-primary">編集</a>
   <a href="{% url 'tasks:taskDelete' pk=task.id %}" class="btn btn-danger">削除</a>
   <a href="{% url 'tasks:taskReportCreate' pk=task.id %}" class="btn btn-success">進捗レポートを追加</a>
 {% endif %}
+<div class="card">
+  <div class="card-body">
+    <p class="card-title" style="font-weight: bold;">{{ task.title }}</p>
+      <p>進捗：{{ task.progress }}%</p>
+      <p>期限：{{ task.due_date}}</p>
+      {% for r in TaskReports %}
+        <div class="card" style="margin: 10px 0;">
+          <div class="card-body">
+            <h5 class="card-title">+{{ r.add_progress }}%</h5>
+            <div class="card-text">{{ r.text }}</div>
+          </div>
+          <p style="font-size: 10px; margin: 0 20px;">{{ r.created_at }}</p>
+        </div>
+      {% endfor %}
+  </div>
+</div>
 {% endblock %}

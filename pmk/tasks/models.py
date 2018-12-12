@@ -40,7 +40,6 @@ class Report(models.Model):
         validators=[MaxValueValidator(100)]
     )
     text = models.TextField(
-        default="```\nslackの記法が使えます\n```",
         verbose_name="やったこと",
         max_length=400,
         blank=False

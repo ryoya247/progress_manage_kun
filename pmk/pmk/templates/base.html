@@ -17,8 +17,9 @@
       <a class="nav-item nav-link" href="{% url 'tasks:taskCreate' %}">タスク追加</a>
       <a class="nav-item nav-link" href="{% url 'tasks:taskList' %}">タスクリスト</a>
       {% if user.is_authenticated %}
-      <a class="nav-item nav-link" href="{% url 'logout' %}" >ログアウト</a>
+      <a class="nav-item nav-link" href="{% url 'accounts:updateUser'  user.id %}" >ユーザ名変更</a>
       <a class="nav-item nav-link" href="{% url 'accounts:password_change' %}" >パスワード変更</a>
+      <a class="nav-item nav-link" href="{% url 'logout' %}" >ログアウト</a>
 
       {% else %}
       <!-- <a class="nav-item nav-link" href="{% url 'accounts:signup' %}" >ユーザ登録</a> -->
