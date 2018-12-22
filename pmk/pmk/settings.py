@@ -10,26 +10,33 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-import os
+import os, environ
 from django.contrib.messages import constants as message_constants
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = environ.Path(__file__) - 3
+env = environ.Env()
+
+# READ_ENV_FILE = env.bool('DJANGO_READ_ENV_FILE', default=False)
+
+env_file = str(BASE_DIR.path('.env'))
+env.read_env(env_file)
+
 
 MESSAGE_TAGS = {
     message_constants.SUCCESS: 'alert alert-success',
     message_constants.ERROR: 'alert alert-danger'
 }
 
-SLACK_ENDPOINT = 'https://hooks.slack.com/services/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'
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
+SLACK_ENDPOINT = env('SLACK_ENDPOINT')
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'uakur)*@*f6(*q%^^=44n#j3a$3ytnhq=zdvz$)5xx62zuwh^p'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG')
 
 ALLOWED_HOSTS = ['localhost']
 
@@ -64,7 +71,7 @@ ROOT_URLCONF = 'pmk.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'pmk/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'pmk/pmk/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -86,10 +93,10 @@ WSGI_APPLICATION = 'pmk.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'progress_managekun_db',
-        'HOST': '127.0.0.1',
-        'USER': 'djangouser',
-        'PASSWORD': 'password'
+        'NAME': env('DB_NAME'),
+        'HOST': env('DB_HOST'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASS')
     }
 }
 
@@ -150,7 +157,7 @@ LOGGING = {
             'propagate': True,
         },
     }
-}  
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -158,5 +165,5 @@ LOGGING = {
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'pmk/static'),
 ]

@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load dueDateDiff %}
 {% block content %}
-<h3>{{user}}のタスクリスト</h3>
-{% if myTasks %}
+<h3>完了タスクリスト</h3>
+{% if compTasks %}
 <form method="get">
   <select name="category">
     <option value="created_at">作成日</option>
@@ -25,7 +25,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for t in myTasks %}
+      {% for t in compTasks %}
         <tr>
           <td><a href="{% url 'tasks:taskDetail' t.id %}">{{ t.title }}</a></td>
           <td>
