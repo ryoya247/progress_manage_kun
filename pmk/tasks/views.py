@@ -74,6 +74,7 @@ class TaskCreateView(LoginRequiredMixin, generic.CreateView):
         'progress',
         'due_date'
     ]
+    
     def form_valid(self, form):
         form.instance.author = self.request.user
         task = form.save(commit=False)
@@ -109,13 +110,13 @@ class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
         'title',
         'due_date'
     ]
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.author.id != request.user.id:
             return redirect('tasks:taskList')
         else:
             return super().get(request, *args, **kwargs)
-
 
     def form_valid(self, form):
         task = form.save(commit=False)
@@ -134,14 +135,12 @@ class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy('tasks:taskList')
     template_name = 'tasks/taskDelete.html'
 
-
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.author.id != request.user.id:
             return redirect('tasks:taskList')
         else:
             return super().get(request, *args, **kwargs)
-
 
     def delete(self, request, *args, **kwargs):
         result = super().delete(request, *args, **kwargs)
@@ -158,7 +157,6 @@ class TaskReportCreatView(LoginRequiredMixin, generic.CreateView):
         'add_progress',
         'text'
     ]
-
 
     def form_valid(self, form):
         task_pk = self.kwargs.get('pk')
