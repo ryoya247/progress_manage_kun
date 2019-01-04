@@ -14,7 +14,7 @@
         <div class="card" style="margin: 10px 0;">
           <div class="card-body">
             <h5 class="card-title">+{{ r.add_progress }}%</h5>
-            <div class="card-text">{{ r.text }}</div>
+            <div class="card-text"><pre>{{ r.text | safe}}</pre></div>
           </div>
           <p style="font-size: 10px; margin: 0 20px;">{{ r.created_at }}</p>
         </div>

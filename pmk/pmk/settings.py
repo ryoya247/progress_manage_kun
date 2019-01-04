@@ -18,6 +18,7 @@ from django.contrib.messages import constants as message_constants
 BASE_DIR = environ.Path(__file__) - 3
 env = environ.Env()
 
+
 # READ_ENV_FILE = env.bool('DJANGO_READ_ENV_FILE', default=False)
 
 env_file = str(BASE_DIR.path('.env'))
@@ -167,5 +168,5 @@ LOGGING = {
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '/pmk/static'),
+    os.path.join(BASE_DIR, 'pmk/static/'),
 ]

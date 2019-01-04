@@ -74,7 +74,7 @@ class TaskCreateView(LoginRequiredMixin, generic.CreateView):
         'progress',
         'due_date'
     ]
-    
+
     def form_valid(self, form):
         form.instance.author = self.request.user
         task = form.save(commit=False)

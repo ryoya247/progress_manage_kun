@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load dueDateDiff %}
 {% block content %}
-<h3>{{user}}のタスクリスト</h3>
+<h3>タスクリスト</h3>
 {% if myTasks %}
 <form method="get">
   <select name="category">
@@ -33,7 +33,7 @@
               <div class="progress-bar" role="progressbar" style="width: {{ t.progress }}%;" aria-valuenow={{t.progress}} aria-valuemin="0" aria-valuemax="100"></div>
             </div>
           </td>
-          <td id="due_date">{{ t.due_date }}：{{ t.due_date | due_date_diff }}{% if t.progress == 100 %}<i class="material-icons">check_circle</i>{% endif %}</td>
+          <td id="due_date">{{ t.due_date }}：{% if t.is_complete %}完了{% else %}{{ t.due_date | due_date_diff }}{% endif%}</td>
         </tr>
       {% endfor %}
     </tbody>
