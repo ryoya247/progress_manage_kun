@@ -18,8 +18,9 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(TaskListView, self).get_context_data(**kwargs)
         myTasks = Task.objects.filter(author = self.request.user.id)
+        myCompTasks = Task.objects.filter(author = self.request.user.id).filter(is_complete=True)
         context['myTasks'] = myTasks
-
+        context['myCompTasks'] = myCompTasks
         category_list = {
             'created_at': '作成日',
             'due_date': '期限',
@@ -71,7 +72,6 @@ class TaskCreateView(LoginRequiredMixin, generic.CreateView):
     model = Task
     fields = [
         'title',
-        'progress',
         'due_date'
     ]
 
@@ -171,11 +171,16 @@ class TaskReportCreatView(LoginRequiredMixin, generic.CreateView):
         report.updated_at = timezone.now()
         report.save()
         parent_task.progress += report.add_progress
+
+        if parent_task.progress == 100:
+            parent_task.is_complete = True
+
         parent_task.save()
+
         messages.success(self.request, '進捗を更新しました')
         requests.post(settings.SLACK_ENDPOINT,
             data = json.dumps({
-                'text': '{}さんが進捗を更新しました'.format(self.request.user, parent_task.title),
+                'text': '{}さんが進捗を更新しました'.format(self.request.user),
                 "attachments": [
                     {
                         "color": "#36a64f",
