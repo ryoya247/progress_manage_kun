@@ -29,7 +29,7 @@
         <tr>
           <td><a href="{% url 'tasks:taskDetail' t.id %}">{{ t.title }}</a></td>
           <td>
-            <div class="progress">
+            <div class="progress" data-toggle="tooltip" data-placement="left" title="{{ t.progress }}％">
               <div class="progress-bar" role="progressbar" style="width: {{ t.progress }}%;" aria-valuenow={{t.progress}} aria-valuemin="0" aria-valuemax="100"></div>
             </div>
           </td>
