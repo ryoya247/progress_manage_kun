@@ -2,7 +2,7 @@
 {% for field in form %}
 <div class="row">
   <div class="form-group col-6">
-    {{ field.label_tag }}
+    {{ field.label }}
 
     {% if form.is_bound %}
       {% if field.errors %}

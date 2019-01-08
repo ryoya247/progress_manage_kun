@@ -8,8 +8,7 @@
 
 {% if next %}
     {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
+    <p>アクセス権限がありません．権限を付与するか，権限があるアカウントでログインしてください．</p>
     {% else %}
     <p>ログインしてください！</p>
     {% endif %}
@@ -17,16 +16,7 @@
 
 <form method="post" action="{% url 'login' %}">
 {% csrf_token %}
-<table>
-<tr>
-    <td>{{ form.username.label_tag }}</td>
-    <td>{{ form.username }}</td>
-</tr>
-<tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-</tr>
-</table>
+{% include 'includes/form.html' %}
 
 <input type="submit" value="ログイン" class="btn btn-primary"/>
 </form>

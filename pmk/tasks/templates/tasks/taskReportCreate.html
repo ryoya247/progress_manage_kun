@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if parentTask %}
+{% for t in parentTask %}
+<h3>{{ t.title }}（現在の進捗：{{ t.progress }}％）</h3>
+{% endfor %}
+{% endif %}
 <form method="post">
   {% csrf_token %}
   {% include 'includes/form.html' %}

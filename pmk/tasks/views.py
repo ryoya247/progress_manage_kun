@@ -158,6 +158,14 @@ class TaskReportCreatView(LoginRequiredMixin, generic.CreateView):
         'text'
     ]
 
+    def get_context_data(self, **kwargs):
+        task_pk = self.kwargs.get('pk')
+        context = super(TaskReportCreatView, self).get_context_data(**kwargs)
+        parent_task = Task.objects.filter(pk = task_pk)
+        context['parentTask'] = parent_task
+        return context
+
+
     def form_valid(self, form):
         task_pk = self.kwargs.get('pk')
         parent_task = get_object_or_404(Task, pk=task_pk)
